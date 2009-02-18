@@ -128,9 +128,9 @@ class Telnet {
      * @param string $command Command to execute      
      * @return string Command result
      */
- 	public function exec($command) {
+ 	public function exec($command, $addNewLine=true) {
     	
-    	$this->write($command);
+    	$this->write($command, $addNewLine);
 		$this->waitPrompt();
 		return $this->getBuffer();
     }
@@ -243,7 +243,7 @@ class Telnet {
      * @param boolean $addNewLine Default true, adds newline to the command 
      * @return boolean
      */
-    private function write($buffer, $addNewLine = true){
+    public function write($buffer, $addNewLine=true){
 
     	if (!$this->socket){
             throw new Exception("Telnet connection closed");            
@@ -311,7 +311,8 @@ class Telnet {
     /**
      * Reads socket until prompt is encountered
      */
-    private function waitPrompt(){
-        return $this->readTo($this->prompt);
+    public function waitPrompt($prompt=null){
+		if (!$prompt) $prompt = $this->prompt;
+        return $this->readTo($prompt);
     }       
 }

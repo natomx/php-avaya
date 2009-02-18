@@ -1,11 +1,11 @@
 <?php
 
-require_once '../Telnet.php';
+require_once 'Telnet.php';
 
 class Avaya_CM 
 {
 	
-	protected $_protocolType = 'Oasis';
+	protected $_protocolType = 'Ossis';
 	
 	protected $protocol = null; // Protocol object
 	
@@ -55,6 +55,7 @@ class Avaya_CM
 		$this->_login 	 = $login;
 		$this->_password = $passwd;
 		$this->_pin 	 = $pin;
+		return $this;
 	}
 	
 	public function connect($host, $port=5023, $login=null, $passwd=null, $pin=null)
@@ -62,18 +63,19 @@ class Avaya_CM
 		if (!$this->_connected) {
 			$this->_host = $host;
 			$this->_port = $port;
-			$this->_setCredentials($login, $passwd, $pin);
+			$this->setCredentials($login, $passwd, $pin);
 		
 			$this->telnet = new Telnet($this->_host, $this->_port);
-			$this->telnet->login($this->_login, $this->_passwd);
+			$this->telnet->login($this->_login, $this->_password);
 		
 			if ($this->_pin) {
 				$this->telnet->waitPrompt('Pin:');
 				$this->telnet->write($pin);
 			}
 		
-			require_once 'Protocol/' . $this->_protocolType . '.php';
-			$this->protocol = new Avaya_Protocol_$$this->_protocolType;
+			require_once 'Avaya/Protocol/' . $this->_protocolType . '.php';
+			$class = 'Avaya_Protocol_'.$this->_protocolType;
+			$this->protocol = new $class;
 			$this->protocol->setTelnet($this->telnet);
 			//$this->protocol->connect();
 				
@@ -89,5 +91,22 @@ class Avaya_CM
 		}
 		return $this->_connected;
 	}
+	public function disconnect() 
+	{
+		if ($this->connected) {
+			$this->telnet->disconnect();
+		}
+	}
 	
+	public function monitorSkill($skill) {
+		return $this->protocol->monitorSkill($skill);
+	}
+	
+	public function listAgents() {
+		return $this->protocol->listAgents();
+	}
+	
+	public function getAgentLog($agentExt) {
+		return $this->protocol->getAgentLog($agentExt);
+	}
 }

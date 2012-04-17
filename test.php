@@ -10,7 +10,7 @@ require_once 'Avaya/CM.php';
 
 $cm = Avaya_CM::getInstance();
 
-$cm->connect('kv-acm-01v1', 5023, 'serv', 'pfrfp38', 'b432167');
+$cm->connect('server', 5023, 'serv', 'login', 'password');
 
 $protocol = $cm->getProtocol();
 

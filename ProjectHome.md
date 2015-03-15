@@ -1,0 +1,1 @@
+PHP class to access and manage Avaya Communication Manager by avaya-telnet protocol
